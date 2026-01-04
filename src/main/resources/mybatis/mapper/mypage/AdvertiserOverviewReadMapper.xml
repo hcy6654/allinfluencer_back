@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.allinfluencer.backend.mypage.infrastructure.mybatis.advertiser.AdvertiserOverviewReadMapper">
+
+    <select id="selectCompany"
+            resultType="com.allinfluencer.backend.mypage.infrastructure.mybatis.advertiser.AdvertiserOverviewReadMapper$CompanyRow">
+        SELECT
+            ac."companyName" AS companyName,
+            ac."industry" AS industry,
+            ac."description" AS description
+        FROM advertiser_companies ac
+        WHERE ac."userId" = #{userId}
+        LIMIT 1
+    </select>
+
+    <select id="countJobPostsByStatus"
+            resultType="com.allinfluencer.backend.mypage.infrastructure.mybatis.advertiser.AdvertiserOverviewReadMapper$JobPostStatusCountRow">
+        SELECT
+            jp."status"::text AS status,
+            COUNT(*) AS count
+        FROM job_posts jp
+        WHERE jp."userId" = #{userId}
+        GROUP BY jp."status"
+    </select>
+
+    <select id="countRecentApplications" resultType="long">
+        SELECT COUNT(*)
+        FROM applications a
+        JOIN job_posts jp ON jp.id = a."jobPostId"
+        WHERE jp."userId" = #{userId}
+          AND a."createdAt" >= (CURRENT_TIMESTAMP - INTERVAL '30 days')
+    </select>
+
+    <select id="countActiveContracts" resultType="long">
+        SELECT COUNT(*)
+        FROM contracts c
+        JOIN offers o ON o.id = c."offerId"
+        JOIN job_posts jp ON jp.id = o."jobPostId"
+        WHERE jp."userId" = #{userId}
+          AND c."status" = 'ACTIVE'
+    </select>
+
+    <select id="selectAvgRating" resultType="double">
+        SELECT AVG(r."rating")::float
+        FROM reviews r
+        WHERE r."receiverId" = #{userId}
+    </select>
+
+</mapper>

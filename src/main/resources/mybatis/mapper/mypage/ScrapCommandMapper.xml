@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.allinfluencer.backend.mypage.infrastructure.mybatis.scrap.ScrapCommandMapper">
+
+    <select id="existsScrap" resultType="int">
+        SELECT 1
+        FROM scraps s
+        WHERE s."userId" = #{userId}
+          AND s."jobPostId" = #{jobPostId}
+        LIMIT 1
+    </select>
+
+    <insert id="insertScrap">
+        INSERT INTO scraps (
+            id,
+            "userId",
+            "jobPostId",
+            "createdAt"
+        ) VALUES (
+            #{id},
+            #{userId},
+            #{jobPostId},
+            #{createdAt}
+        )
+    </insert>
+
+    <delete id="deleteScrap">
+        DELETE FROM scraps
+        WHERE "userId" = #{userId}
+          AND "jobPostId" = #{jobPostId}
+    </delete>
+
+</mapper>

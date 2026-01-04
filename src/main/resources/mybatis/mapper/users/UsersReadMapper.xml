@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.allinfluencer.backend.users.infrastructure.mybatis.UsersReadMapper">
+
+    <sql id="userWhere">
+        <where>
+            <if test="role != null and role != ''">
+                u."role" = CAST(#{role} AS "UserRole")
+            </if>
+            <if test="status != null and status != ''">
+                <if test="role != null and role != ''">AND</if>
+                u."status" = CAST(#{status} AS "UserStatus")
+            </if>
+            <if test="search != null and search != ''">
+                <if test="(role != null and role != '') or (status != null and status != '')">AND</if>
+                (
+                    LOWER(COALESCE(u."email", '')) LIKE CONCAT('%', LOWER(#{search}), '%')
+                    OR LOWER(COALESCE(u."displayName", '')) LIKE CONCAT('%', LOWER(#{search}), '%')
+                )
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectUsers"
+            resultType="com.allinfluencer.backend.users.infrastructure.mybatis.UsersReadMapper$UserRow">
+        SELECT
+            u.id,
+            u."email" AS email,
+            u."displayName" AS displayName,
+            u."avatar" AS avatar,
+            u."role"::text AS role,
+            u."status"::text AS status,
+            u."bio" AS bio,
+            u."website" AS website,
+            u."createdAt" AS createdAt,
+            u."updatedAt" AS updatedAt,
+            u."lastLoginAt" AS lastLoginAt
+        FROM users u
+        <include refid="userWhere"/>
+        ORDER BY u."createdAt" DESC, u.id DESC
+        OFFSET #{offset}
+        LIMIT #{limit}
+    </select>
+
+    <select id="countUsers" resultType="long">
+        SELECT COUNT(*)
+        FROM users u
+        <include refid="userWhere"/>
+    </select>
+
+    <select id="selectUserById"
+            resultType="com.allinfluencer.backend.users.infrastructure.mybatis.UsersReadMapper$UserRow">
+        SELECT
+            u.id,
+            u."email" AS email,
+            u."displayName" AS displayName,
+            u."avatar" AS avatar,
+            u."role"::text AS role,
+            u."status"::text AS status,
+            u."bio" AS bio,
+            u."website" AS website,
+            u."createdAt" AS createdAt,
+            u."updatedAt" AS updatedAt,
+            u."lastLoginAt" AS lastLoginAt
+        FROM users u
+        WHERE u.id = #{id}
+        LIMIT 1
+    </select>
+
+</mapper>

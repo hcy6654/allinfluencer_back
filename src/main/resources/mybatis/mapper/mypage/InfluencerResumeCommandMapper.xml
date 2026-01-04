@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.allinfluencer.backend.mypage.infrastructure.mybatis.influencer.InfluencerResumeCommandMapper">
+
+    <update id="updateResume">
+        UPDATE influencer_profiles
+        <set>
+            <if test="headline != null">
+                "headline" = #{headline},
+            </if>
+            <if test="bio != null">
+                "bio" = #{bio},
+            </if>
+            <if test="skills != null">
+                "skills" = #{skills, typeHandler=com.allinfluencer.backend.mypage.infrastructure.mybatis.typehandler.TextArrayTypeHandler},
+            </if>
+            <if test="portfolioUrls != null">
+                "portfolioUrls" = #{portfolioUrls, typeHandler=com.allinfluencer.backend.mypage.infrastructure.mybatis.typehandler.TextArrayTypeHandler},
+            </if>
+            <if test="resumeJson != null">
+                "resumeJson" = CAST(#{resumeJson} AS jsonb),
+            </if>
+            "updatedAt" = #{updatedAt}
+        </set>
+        WHERE "userId" = #{userId}
+    </update>
+
+</mapper>

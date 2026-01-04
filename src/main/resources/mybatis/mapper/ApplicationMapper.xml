@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.allinfluencer.backend.mypage.infrastructure.mybatis.application.ApplicationMapper">
+
+    <select id="selectById"
+            resultType="com.allinfluencer.backend.mypage.infrastructure.mybatis.application.ApplicationMapper$ApplicationRow">
+        SELECT
+            a.id,
+            a."jobPostId" AS jobPostId,
+            a."userId" AS userId,
+            jp."userId" AS advertiserUserId,
+            a."status"::text AS status,
+            a."updatedAt" AS updatedAt
+        FROM applications a
+        JOIN job_posts jp ON jp.id = a."jobPostId"
+        WHERE a.id = #{applicationId}
+        LIMIT 1
+    </select>
+
+    <update id="updateStatus">
+        UPDATE applications
+        SET "status" = CAST(#{status} AS "ApplicationStatus"),
+            "updatedAt" = #{updatedAt}
+        WHERE id = #{applicationId}
+    </update>
+
+</mapper>

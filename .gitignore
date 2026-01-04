@@ -1,0 +1,14 @@
+target/
+.idea/
+.vscode/
+*.iml
+
+# logs
+*.log
+
+# OS
+.DS_Store
+
+# local env (do not commit)
+env.local
+

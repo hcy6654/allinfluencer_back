@@ -1,0 +1,12 @@
+package com.allinfluencer.backend.mypage.application.query.dto;
+
+import java.util.List;
+
+public record PageResult<T>(
+        List<T> items,
+        boolean hasMore,
+        String nextCursor
+) {
+}
+
+

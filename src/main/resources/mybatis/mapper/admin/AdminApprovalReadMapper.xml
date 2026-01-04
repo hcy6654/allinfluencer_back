@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.allinfluencer.backend.admin.infrastructure.mybatis.AdminApprovalReadMapper">
+
+    <select id="countPendingInfluencers" resultType="long">
+        SELECT COUNT(*)
+        FROM influencer_verifications iv
+        WHERE iv.status = 'PENDING'
+    </select>
+
+    <select id="countPendingAdvertisers" resultType="long">
+        SELECT COUNT(*)
+        FROM advertiser_verifications av
+        WHERE av.status = 'PENDING'
+    </select>
+
+    <select id="selectPendingInfluencers"
+            resultType="com.allinfluencer.backend.admin.infrastructure.mybatis.AdminApprovalReadMapper$PendingInfluencerRow">
+        SELECT
+            u.id AS userId,
+            u."email" AS email,
+            u."displayName" AS displayName,
+            ip."categories" AS categories,
+            iv."submittedAt" AS submittedAt
+        FROM influencer_verifications iv
+        JOIN users u ON u.id = iv."userId"
+        LEFT JOIN influencer_profiles ip ON ip."userId" = u.id
+        WHERE iv.status = 'PENDING'
+        <if test="cursor != null">
+            AND iv."submittedAt" &lt; #{cursor}
+        </if>
+        ORDER BY iv."submittedAt" DESC, iv.id DESC
+        LIMIT #{limitPlusOne}
+    </select>
+
+    <select id="selectPendingAdvertisers"
+            resultType="com.allinfluencer.backend.admin.infrastructure.mybatis.AdminApprovalReadMapper$PendingAdvertiserRow">
+        SELECT
+            u.id AS userId,
+            u."email" AS email,
+            ac."companyName" AS companyName,
+            ac."industry" AS industry,
+            ac."businessRegistrationNumber" AS businessRegistrationNumber,
+            av."submittedAt" AS submittedAt
+        FROM advertiser_verifications av
+        JOIN users u ON u.id = av."userId"
+        LEFT JOIN advertiser_companies ac ON ac."userId" = u.id
+        WHERE av.status = 'PENDING'
+        <if test="cursor != null">
+            AND av."submittedAt" &lt; #{cursor}
+        </if>
+        ORDER BY av."submittedAt" DESC, av.id DESC
+        LIMIT #{limitPlusOne}
+    </select>
+
+</mapper>

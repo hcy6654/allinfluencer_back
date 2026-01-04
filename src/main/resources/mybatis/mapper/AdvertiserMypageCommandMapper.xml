@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.allinfluencer.backend.mypage.infrastructure.mybatis.AdvertiserMypageCommandMapper">
+
+    <insert id="insertJobPost">
+        INSERT INTO job_posts (
+            id,
+            "userId",
+            "companyId",
+            "title",
+            "description",
+            "requirements",
+            "budget",
+            "categories",
+            "platforms",
+            "deadline",
+            "status",
+            "createdAt",
+            "updatedAt"
+        ) VALUES (
+            #{id},
+            #{userId},
+            #{companyId},
+            #{title},
+            #{description},
+            #{requirements},
+            #{budget},
+            #{categories, typeHandler=com.allinfluencer.backend.mypage.infrastructure.mybatis.typehandler.TextArrayTypeHandler},
+            #{platforms, typeHandler=com.allinfluencer.backend.mypage.infrastructure.mybatis.typehandler.PlatformArrayTypeHandler},
+            #{deadline},
+            'OPEN',
+            #{createdAt},
+            #{updatedAt}
+        )
+    </insert>
+
+    <insert id="insertOffer">
+        INSERT INTO offers (
+            id,
+            "jobPostId",
+            "senderId",
+            "receiverId",
+            "amount",
+            "description",
+            "deadline",
+            "status",
+            "createdAt",
+            "updatedAt"
+        ) VALUES (
+            #{id},
+            #{jobPostId},
+            #{senderId},
+            #{receiverId},
+            #{amount},
+            #{description},
+            #{deadline},
+            'PENDING',
+            #{createdAt},
+            #{updatedAt}
+        )
+    </insert>
+
+</mapper>
+

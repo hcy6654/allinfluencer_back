@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.allinfluencer.backend.signup.infrastructure.mybatis.InfluencerProfileCommandMapper">
+
+    <insert id="insertInfluencerProfile">
+        INSERT INTO influencer_profiles (
+            id,
+            "userId",
+            "categories",
+            "headline",
+            "createdAt",
+            "updatedAt"
+        ) VALUES (
+            #{id},
+            #{userId},
+            #{categories, typeHandler=com.allinfluencer.backend.mypage.infrastructure.mybatis.typehandler.TextArrayTypeHandler},
+            #{headline},
+            #{createdAt},
+            #{updatedAt}
+        )
+    </insert>
+
+    <insert id="insertChannel">
+        INSERT INTO channels (
+            id,
+            "influencerProfileId",
+            "platform",
+            "channelUrl",
+            "channelHandle",
+            "followers",
+            "avgViews",
+            "avgLikes",
+            "createdAt",
+            "updatedAt"
+        ) VALUES (
+            #{id},
+            #{influencerProfileId},
+            CAST(#{platform} AS "Platform"),
+            #{channelUrl},
+            COALESCE(#{channelHandle}, ''),
+            COALESCE(#{followers}, 0),
+            0,
+            0,
+            #{createdAt},
+            #{updatedAt}
+        )
+    </insert>
+
+</mapper>

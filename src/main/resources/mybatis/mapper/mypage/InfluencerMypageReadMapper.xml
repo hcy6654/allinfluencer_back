@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.allinfluencer.backend.mypage.infrastructure.mybatis.influencer.InfluencerMypageReadMapper">
+
+    <select id="selectOverview"
+            resultType="com.allinfluencer.backend.mypage.infrastructure.mybatis.influencer.InfluencerMypageReadMapper$OverviewRow">
+        SELECT
+            ip."headline" AS headline,
+            COALESCE((SELECT SUM(c."followers") FROM channels c WHERE c."influencerProfileId" = ip.id), 0) AS totalFollowers,
+            COALESCE(ip."avgEngagement", 0.0) AS avgEngagement,
+            ip."ratePerPost" AS ratePerPost,
+            COALESCE((SELECT COUNT(*) FROM channels c WHERE c."influencerProfileId" = ip.id), 0) AS channelCount,
+            COALESCE((SELECT COUNT(*) FROM applications a WHERE a."userId" = #{userId}), 0) AS applicationTotal,
+            COALESCE((SELECT COUNT(*) FROM applications a WHERE a."userId" = #{userId} AND a."status" = 'PENDING'), 0) AS applicationPending,
+            COALESCE((SELECT COUNT(*) FROM applications a WHERE a."userId" = #{userId} AND a."status" = 'ACCEPTED'), 0) AS applicationAccepted,
+            COALESCE((SELECT COUNT(*) FROM applications a WHERE a."userId" = #{userId} AND a."status" = 'REJECTED'), 0) AS applicationRejected,
+            COALESCE((SELECT COUNT(*) FROM applications a WHERE a."userId" = #{userId} AND a."status" = 'WITHDRAWN'), 0) AS applicationWithdrawn,
+            COALESCE((SELECT COUNT(*) FROM scraps s WHERE s."userId" = #{userId}), 0) AS scrapCount,
+            COALESCE((SELECT COUNT(*) FROM contracts ct WHERE ct."userId" = #{userId} AND ct."status" = 'COMPLETED'), 0) AS completedContracts,
+            (SELECT AVG(r."rating")::float FROM reviews r WHERE r."receiverId" = #{userId}) AS avgRating
+        FROM influencer_profiles ip
+        WHERE ip."userId" = #{userId}
+        LIMIT 1
+    </select>
+
+    <select id="selectResume"
+            resultType="com.allinfluencer.backend.mypage.infrastructure.mybatis.influencer.InfluencerMypageReadMapper$ResumeRow">
+        SELECT
+            ip.id,
+            ip."userId" AS userId,
+            ip."categories" AS categories,
+            ip."followers" AS followers,
+            ip."avgEngagement" AS avgEngagement,
+            ip."ratePerPost" AS ratePerPost,
+            ip."location" AS location,
+            ip."languages" AS languages,
+            ip."headline" AS headline,
+            ip."bio" AS bio,
+            ip."skills" AS skills,
+            ip."portfolioUrls" AS portfolioUrls,
+            ip."resumeJson"::text AS resumeJson
+        FROM influencer_profiles ip
+        WHERE ip."userId" = #{userId}
+        LIMIT 1
+    </select>
+
+    <select id="selectChannels"
+            resultType="com.allinfluencer.backend.mypage.infrastructure.mybatis.influencer.InfluencerMypageReadMapper$ChannelRow">
+        SELECT
+            c.id,
+            c."platform"::text AS platform,
+            c."channelUrl" AS channelUrl,
+            c."channelHandle" AS channelHandle,
+            c."followers" AS followers,
+            c."avgViews" AS avgViews,
+            c."avgLikes" AS avgLikes
+        FROM channels c
+        JOIN influencer_profiles ip ON ip.id = c."influencerProfileId"
+        WHERE ip."userId" = #{userId}
+        ORDER BY c."followers" DESC, c.id DESC
+    </select>
+
+    <select id="selectMyApplications"
+            resultType="com.allinfluencer.backend.mypage.infrastructure.mybatis.influencer.InfluencerMypageReadMapper$ApplicationRow">
+        SELECT
+            a.id,
+            a."status"::text AS status,
+            a."createdAt" AS appliedAt,
+            jp.id AS jobPostId,
+            jp."title" AS jobTitle,
+            jp."userId" AS advertiserId,
+            ac."companyName" AS advertiserCompanyName
+        FROM applications a
+        JOIN job_posts jp ON jp.id = a."jobPostId"
+        LEFT JOIN advertiser_companies ac ON ac.id = jp."companyId"
+        WHERE a."userId" = #{userId}
+        <if test="status != null and status != ''">
+            AND a."status" = CAST(#{status} AS "ApplicationStatus")
+        </if>
+        <if test="cursor != null">
+            AND a."createdAt" &lt; #{cursor}
+        </if>
+        ORDER BY a."createdAt" DESC, a.id DESC
+        LIMIT #{limitPlusOne}
+    </select>
+
+    <select id="selectMyScraps"
+            resultType="com.allinfluencer.backend.mypage.infrastructure.mybatis.influencer.InfluencerMypageReadMapper$ScrapRow">
+        SELECT
+            jp.id AS jobPostId,
+            jp."title" AS jobTitle,
+            s."createdAt" AS scrappedAt
+        FROM scraps s
+        JOIN job_posts jp ON jp.id = s."jobPostId"
+        WHERE s."userId" = #{userId}
+        <if test="cursor != null">
+            AND s."createdAt" &lt; #{cursor}
+        </if>
+        ORDER BY s."createdAt" DESC, jp.id DESC
+        LIMIT #{limitPlusOne}
+    </select>
+
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.allinfluencer.backend.mypage.infrastructure.mybatis.AdvertiserMypageReadMapper">
+
+    <select id="selectMyJobPosts"
+            resultType="com.allinfluencer.backend.mypage.infrastructure.mybatis.AdvertiserMypageReadMapper$JobPostSummaryRow">
+        SELECT
+            jp.id,
+            jp."title",
+            jp."description",
+            jp."budget",
+            jp."categories",
+            (jp."platforms"::text[]) AS platforms,
+            jp."deadline",
+            jp."status"::text AS status,
+            jp."createdAt" AS createdAt,
+            jp."updatedAt" AS updatedAt,
+            (
+                SELECT COUNT(*)
+                FROM applications a
+                WHERE a."jobPostId" = jp.id
+            ) AS applicationCount,
+            (
+                SELECT COUNT(*)
+                FROM offers o
+                WHERE o."jobPostId" = jp.id
+            ) AS offerCount
+        FROM job_posts jp
+        WHERE jp."userId" = #{userId}
+        <if test="status != null and status != ''">
+            AND jp."status" = CAST(#{status} AS "JobPostStatus")
+        </if>
+        <if test="cursor != null">
+            AND jp."createdAt" &lt; #{cursor}
+        </if>
+        ORDER BY jp."createdAt" DESC, jp.id DESC
+        LIMIT #{limitPlusOne}
+    </select>
+
+    <select id="selectJobPostRef"
+            resultType="com.allinfluencer.backend.mypage.infrastructure.mybatis.AdvertiserMypageReadMapper$JobPostRefRow">
+        SELECT jp.id, jp."title"
+        FROM job_posts jp
+        WHERE jp.id = #{jobPostId}
+          AND jp."userId" = #{userId}
+        LIMIT 1
+    </select>
+
+    <select id="selectJobPostOffers"
+            resultType="com.allinfluencer.backend.mypage.infrastructure.mybatis.AdvertiserMypageReadMapper$OfferSummaryRow">
+        SELECT
+            o.id,
+            o."jobPostId" AS jobPostId,
+            o."amount",
+            o."description",
+            o."deadline",
+            o."status"::text AS status,
+            o."createdAt" AS createdAt,
+            o."updatedAt" AS updatedAt,
+            u.id AS receiverId,
+            u."displayName" AS receiverDisplayName,
+            u."avatar" AS receiverAvatar
+        FROM offers o
+        JOIN users u ON u.id = o."receiverId"
+        WHERE o."jobPostId" = #{jobPostId}
+          AND o."senderId" = #{userId}
+        <if test="status != null and status != ''">
+            AND o."status" = CAST(#{status} AS "OfferStatus")
+        </if>
+        <if test="cursor != null">
+            AND o."createdAt" &lt; #{cursor}
+        </if>
+        ORDER BY o."createdAt" DESC, o.id DESC
+        LIMIT #{limitPlusOne}
+    </select>
+
+</mapper>
+

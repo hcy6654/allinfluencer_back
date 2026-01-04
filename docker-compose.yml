@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: allinfluencer-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: allinfluencer
+      POSTGRES_USER: allinfluencer
+      POSTGRES_PASSWORD: allinfluencer
+      TZ: Asia/Seoul
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U allinfluencer -d allinfluencer"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: allinfluencer-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./env.local
+    environment:
+      # compose 내부에서는 postgres 서비스명으로 접속해야 함
+      DATABASE_URL: jdbc:postgresql://postgres:5432/allinfluencer
+    ports:
+      - "3001:3001"
+
+volumes:
+  postgres_data:
+    driver: local
+
