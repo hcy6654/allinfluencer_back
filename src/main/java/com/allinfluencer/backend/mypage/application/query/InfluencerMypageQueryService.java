@@ -70,18 +70,18 @@ public class InfluencerMypageQueryService {
         var resume = mapper.selectResume(userId);
         var channels = mapper.selectChannels(userId);
         return Map.of(
-                "resume", resume == null ? null : Map.of(
-                        "headline", resume.headline(),
-                        "bio", resume.bio(),
-                        "skills", resume.skills(),
-                        "portfolioUrls", resume.portfolioUrls(),
-                        "resumeJson", resume.resumeJson(),
-                        "categories", resume.categories(),
-                        "followers", resume.followers(),
-                        "avgEngagement", resume.avgEngagement(),
-                        "ratePerPost", resume.ratePerPost(),
-                        "location", resume.location(),
-                        "languages", resume.languages()
+                "resume", resume == null ? null : Map.<String, Object>ofEntries(
+                        Map.entry("headline", resume.headline()),
+                        Map.entry("bio", resume.bio()),
+                        Map.entry("skills", resume.skills()),
+                        Map.entry("portfolioUrls", resume.portfolioUrls()),
+                        Map.entry("resumeJson", resume.resumeJson()),
+                        Map.entry("categories", resume.categories()),
+                        Map.entry("followers", resume.followers()),
+                        Map.entry("avgEngagement", resume.avgEngagement()),
+                        Map.entry("ratePerPost", resume.ratePerPost()),
+                        Map.entry("location", resume.location()),
+                        Map.entry("languages", resume.languages())
                 ),
                 "channels", channels.stream().map(c -> Map.of(
                         "id", c.id(),
@@ -104,18 +104,18 @@ public class InfluencerMypageQueryService {
         var pageRows = hasMore ? rows.subList(0, pageSize) : rows;
         String nextCursor = hasMore ? pageRows.get(pageRows.size() - 1).appliedAt().toString() : null;
 
-        var items = pageRows.stream().map(r -> Map.<String, Object>of(
-                "id", r.id(),
-                "status", r.status(),
-                "appliedAt", r.appliedAt().toString(),
-                "jobPost", Map.of(
+        var items = pageRows.stream().map(r -> Map.<String, Object>ofEntries(
+                Map.entry("id", r.id()),
+                Map.entry("status", r.status()),
+                Map.entry("appliedAt", r.appliedAt().toString()),
+                Map.entry("jobPost", Map.of(
                         "id", r.jobPostId(),
                         "title", r.jobTitle()
-                ),
-                "advertiser", Map.of(
+                )),
+                Map.entry("advertiser", Map.of(
                         "id", r.advertiserId(),
                         "companyName", r.advertiserCompanyName()
-                )
+                ))
         )).toList();
 
         return new PageResult<>(items, hasMore, nextCursor);
@@ -130,12 +130,12 @@ public class InfluencerMypageQueryService {
         var pageRows = hasMore ? rows.subList(0, pageSize) : rows;
         String nextCursor = hasMore ? pageRows.get(pageRows.size() - 1).scrappedAt().toString() : null;
 
-        var items = pageRows.stream().map(r -> Map.<String, Object>of(
-                "jobPost", Map.of(
+        var items = pageRows.stream().map(r -> Map.<String, Object>ofEntries(
+                Map.entry("jobPost", Map.of(
                         "id", r.jobPostId(),
                         "title", r.jobTitle()
-                ),
-                "scrappedAt", r.scrappedAt().toString()
+                )),
+                Map.entry("scrappedAt", r.scrappedAt().toString())
         )).toList();
 
         return new PageResult<>(items, hasMore, nextCursor);

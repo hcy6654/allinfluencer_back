@@ -15,14 +15,18 @@ Java 21이 필요합니다.
 
 ```bash
 cd allinfluencer-backend
-mvn spring-boot:run
+# Gradle로 실행 (로컬에 gradle이 설치되어 있는 경우)
+gradle bootRun
+
+# 또는 Docker로 실행 (Postgres 포함)
+docker compose up --build
 ```
 
-기본 포트는 `3001` 입니다.
+기본 포트는 `8080` 입니다.
 
 ## 환경변수 (로컬 Postgres)
 
-- `SERVER_PORT` (기본: 3001)
+- `SERVER_PORT` (기본: 8080)
 - `DATABASE_URL` (기본: `jdbc:postgresql://localhost:5432/allinfluencer`)
 - `DATABASE_USERNAME` (기본: allinfluencer)
 - `DATABASE_PASSWORD` (기본: allinfluencer)
