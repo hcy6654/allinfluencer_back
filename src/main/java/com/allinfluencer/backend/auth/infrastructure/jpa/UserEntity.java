@@ -37,6 +37,12 @@ public class UserEntity {
     @Column(name = "status", nullable = false)
     private String status;
 
+    @Column(name = "bio")
+    private String bio;
+
+    @Column(name = "website")
+    private String website;
+
     @Column(name = "lastLoginAt")
     private LocalDateTime lastLoginAt;
 
@@ -77,6 +83,8 @@ public class UserEntity {
     public String getStatus() { return status; }
     public String getAvatar() { return avatar; }
     public LocalDateTime getLastLoginAt() { return lastLoginAt; }
+    public String getBio() { return bio; }
+    public String getWebsite() { return website; }
 
     public void setLastLoginAt(LocalDateTime lastLoginAt) { this.lastLoginAt = lastLoginAt; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }

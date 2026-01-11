@@ -106,18 +106,18 @@ public class UsersController {
         boolean hasPrev = safePage > 1;
         boolean hasNext = safePage < totalPages;
 
-        var data = items.stream().map(u -> Map.of(
-                "id", u.id(),
-                "email", u.email(),
-                "displayName", u.displayName(),
-                "avatar", u.avatar(),
-                "role", u.role(),
-                "status", u.status(),
-                "bio", u.bio(),
-                "website", u.website(),
-                "createdAt", u.createdAt() == null ? null : u.createdAt().toString(),
-                "updatedAt", u.updatedAt() == null ? null : u.updatedAt().toString(),
-                "lastLoginAt", u.lastLoginAt() == null ? null : u.lastLoginAt().toString()
+        var data = items.stream().map(u -> Map.<String, Object>ofEntries(
+                Map.entry("id", u.id()),
+                Map.entry("email", u.email()),
+                Map.entry("displayName", u.displayName()),
+                Map.entry("avatar", u.avatar()),
+                Map.entry("role", u.role()),
+                Map.entry("status", u.status()),
+                Map.entry("bio", u.bio()),
+                Map.entry("website", u.website()),
+                Map.entry("createdAt", u.createdAt() == null ? null : u.createdAt().toString()),
+                Map.entry("updatedAt", u.updatedAt() == null ? null : u.updatedAt().toString()),
+                Map.entry("lastLoginAt", u.lastLoginAt() == null ? null : u.lastLoginAt().toString())
         )).toList();
 
         return Map.of("data", Map.of(
@@ -140,18 +140,18 @@ public class UsersController {
             throw new DomainException("NOT_FOUND", "사용자를 찾을 수 없습니다.");
         }
 
-        return Map.of("data", Map.of(
-                "id", u.id(),
-                "email", u.email(),
-                "displayName", u.displayName(),
-                "avatar", u.avatar(),
-                "role", u.role(),
-                "status", u.status(),
-                "bio", u.bio(),
-                "website", u.website(),
-                "createdAt", u.createdAt() == null ? null : u.createdAt().toString(),
-                "updatedAt", u.updatedAt() == null ? null : u.updatedAt().toString(),
-                "lastLoginAt", u.lastLoginAt() == null ? null : u.lastLoginAt().toString()
+        return Map.of("data", Map.<String, Object>ofEntries(
+                Map.entry("id", u.id()),
+                Map.entry("email", u.email()),
+                Map.entry("displayName", u.displayName()),
+                Map.entry("avatar", u.avatar()),
+                Map.entry("role", u.role()),
+                Map.entry("status", u.status()),
+                Map.entry("bio", u.bio()),
+                Map.entry("website", u.website()),
+                Map.entry("createdAt", u.createdAt() == null ? null : u.createdAt().toString()),
+                Map.entry("updatedAt", u.updatedAt() == null ? null : u.updatedAt().toString()),
+                Map.entry("lastLoginAt", u.lastLoginAt() == null ? null : u.lastLoginAt().toString())
         ));
     }
 
