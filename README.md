@@ -24,6 +24,28 @@ docker compose up --build
 
 기본 포트는 `8080` 입니다.
 
+### DB 연결 에러가 날 때 (localhost:5432 refused)
+
+이 프로젝트는 기본값으로 `DATABASE_URL=jdbc:postgresql://localhost:5432/allinfluencer` 에 접속합니다.  
+따라서 로컬에 Postgres가 떠있지 않으면 앱 시작 시(Flyway) 아래와 같은 에러로 종료됩니다: `Connection to localhost:5432 refused`.
+
+- **.env.local 확인**
+
+`docker-compose.yml`은 `./.env.local`을 읽습니다. 로컬에 `.env.local`이 이미 있다면 그대로 사용하시면 됩니다.
+
+- **Docker로 Postgres만 올리고(로컬에서 Spring 실행)**:
+
+```bash
+docker compose up -d postgres
+./gradlew bootRun
+```
+
+- **Docker로 Postgres + 백엔드까지 같이 실행**:
+
+```bash
+docker compose up --build
+```
+
 ## 환경변수 (로컬 Postgres)
 
 - `SERVER_PORT` (기본: 8080)
